@@ -71,8 +71,6 @@ if prompt := st.chat_input("Ask me anything..."):
                         "\n- Website: https://christchurchworksop.org.uk/"
                         "\n- YouTube: https://www.youtube.com/channel/UCKTxue-nNxsMOZJh6po5PVg"
                         "\n- Facebook: https://www.facebook.com/ChristChurchWorksop"
-                        "\n\n**CURRENT EVENT:** The Lunar New Year & Valentine's Event will be held on **8 February 2026, from 2:30 PM - 4:30 PM**. Activities include Market Stalls, Festive Refreshments, Chinese Calligraphy, Quiz, and a Raffle."
-
                         "\n\nSEARCHING INSTRUCTIONS:"
                         "\nAlways use the Google Search tool for all other events, times, or community posts. You must search both site:christchurchworksop.org.uk AND site:facebook.com/ChristChurchWorksop. If no information is found for a non-listed event, politely advise the user to contact the church directly or attend a Sunday service for the latest announcements."
                     ),
