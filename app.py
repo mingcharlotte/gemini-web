@@ -63,9 +63,10 @@ if prompt := st.chat_input("Ask me anything..."):
                     "\n- YouTube: https://www.youtube.com/channel/UCKTxue-nNxsMOZJh6po5PVg"
                     "\n- Facebook: https://www.facebook.com/ChristChurchWorksop"
                     "\n\nSEARCHING INSTRUCTIONS:"
-                    "\n1. For official details or long-term events, search: 'site:christchurchworksop.org.uk [user query]'"
-                    "\n2. For recent updates, news, or community posts, search: 'site:facebook.com/ChristChurchWorksop [user query]'"
-                    "\nAlways prioritize these two sources. If info is found on Facebook, mention it is from a recent social media update."
+                    "\nAlways use the Google Search tool when looking for specific church events, times, or community posts. You must search two domains:"
+                    "\n1. **Official Website:** Search site:christchurchworksop.org.uk"
+                    "\n2. **Facebook Page:** Search site:facebook.com/ChristChurchWorksop"
+                    "\nPrioritize any specific information found on these two sites. If info is found on Facebook, mention it is from a recent social media update."
                 ),
                 'tools': [
                     {'google_search': {}} 
