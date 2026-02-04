@@ -1,7 +1,6 @@
 import streamlit as st
 from google import genai
 import os
-from google.generativeai.errors import APIError
 
 st.set_page_config(page_title="Christian AI Chat", page_icon="🤖")
 st.title("🤖 Christian AI Web Assistant")
@@ -17,16 +16,13 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 
 # 2. AUTOMATIC MODEL FINDER
-# This part finds the correct name (e.g., gemini-2.5-flash) automatically
 if "model_name" not in st.session_state:
     try:
         models = client.models.list()
-        # Find the first model that supports chatting (generate_content)
         for m in models:
             if "flash" in m.name:
                 st.session_state.model_name = m.name
                 break
-        # Fallback if no flash found
         if "model_name" not in st.session_state:
             st.session_state.model_name = "gemini-2.5-flash" 
     except Exception as e:
@@ -49,20 +45,18 @@ if prompt := st.chat_input("Ask me anything..."):
     st.chat_message("user").markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # Define a list of models to try in order of preference (current one first)
-    # Using specific names from the user's Quota Dashboard for fallbacks
+    # Model Fallback List (in order of preference/stability)
     model_fallbacks = [
-        st.session_state.model_name,  # The model already in use
-        "gemini-3-flash",             # The reliable fallback from the dashboard
-        "gemini-2.5-flash-lite",      # The lower-resource fallback from the dashboard
-        "gemini-2.5-flash"            # A second attempt at the standard model
+        st.session_state.model_name,  # The model that was automatically selected
+        "gemini-3-flash",             # Second attempt
+        "gemini-2.5-flash-lite",      # Third attempt (lower resource)
+        "gemini-2.5-flash"            # Final attempt
     ]
-    response = None # Initialize response variable
+    response = None 
 
-    # Loop through the fallbacks and try to generate content
+    # Loop through the fallbacks to find a working model
     for model_to_try in model_fallbacks:
         try:
-            # Update the model name in session state for UI confirmation
             st.session_state.model_name = model_to_try
             
             response = client.models.generate_content(
@@ -87,27 +81,21 @@ if prompt := st.chat_input("Ask me anything..."):
                     ]
                 }
             )
-            # If successful, break the loop and process the response
+            # If successful, break the loop
             break 
 
-        except APIError as e:
-            # Check for the Quota Exhausted error (Error 429) OR Model Not Found (Error 404)
-            if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
-                st.warning(f"Quota exhausted for {model_to_try}. Trying next model...")
-                continue # Go to the next model in the list
-            elif "404" in str(e) or "NOT_FOUND" in str(e):
-                st.warning(f"Model {model_to_try} not found or unsupported. Trying next model...")
-                continue # Go to the next model in the list
+        except Exception as e:
+            error_message = str(e)
+            
+            # Check for Quota Exhausted (429) or Model Not Found (404/NOT_FOUND) errors
+            if "429" in error_message or "RESOURCE_EXHAUSTED" in error_message or "NOT_FOUND" in error_message:
+                st.warning(f"Quota/Model error for {model_to_try}. Trying next model...")
+                continue
             else:
-                # If it's any other error, stop everything
-                st.error(f"An unexpected API error occurred with {model_to_try}: {e}")
+                # Any other unexpected error
+                st.error(f"An unexpected error occurred with {model_to_try}: {e}")
                 response = None 
                 break # Exit the loop immediately
-        
-        except Exception as e:
-            st.error(f"An unexpected error occurred: {e}")
-            response = None 
-            break
 
 
     # Process the result only if a valid response was generated
@@ -117,5 +105,5 @@ if prompt := st.chat_input("Ask me anything..."):
         st.session_state.messages.append({"role": "assistant", "content": response.text})
     
     # If all models failed
-    elif not response:
+    elif not response and prompt:
          st.error("❌ All available models failed due to persistent quota limits or unexpected errors.")
