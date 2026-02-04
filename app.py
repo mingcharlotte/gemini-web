@@ -1,6 +1,7 @@
 import streamlit as st
 from google import genai
 import os
+from google.generativeai.errors import APIError
 
 st.set_page_config(page_title="Christian AI Chat", page_icon="🤖")
 st.title("🤖 Christian AI Web Assistant")
@@ -16,19 +17,18 @@ if not api_key:
 client = genai.Client(api_key=api_key)
 
 # 2. AUTOMATIC MODEL FINDER
-# This part finds the correct name (e.g., gemini-3.0-flash) automatically
+# This part finds the correct name (e.g., gemini-2.5-flash) automatically
 if "model_name" not in st.session_state:
     try:
         models = client.models.list()
         # Find the first model that supports chatting (generate_content)
-        # and has "flash" in the name (because it's free/fast)
         for m in models:
             if "flash" in m.name:
                 st.session_state.model_name = m.name
                 break
         # Fallback if no flash found
         if "model_name" not in st.session_state:
-            st.session_state.model_name = "gemini-2.0-flash" 
+            st.session_state.model_name = "gemini-2.5-flash" 
     except Exception as e:
         st.error(f"Could not find models: {e}")
         st.stop()
@@ -49,13 +49,17 @@ if prompt := st.chat_input("Ask me anything..."):
     st.chat_message("user").markdown(prompt)
     st.session_state.messages.append({"role": "user", "content": prompt})
     
-    # 1. Define a list of models to try in order (e.g., faster models first)
-    # The current one (st.session_state.model_name) is already set, so we put it first.
-    # Add other stable models as fallbacks.
-    model_fallbacks = [st.session_state.model_name, "gemini-3-flash", "gemini-2.5-flash"]
+    # Define a list of models to try in order of preference (current one first)
+    # Using specific names from the user's Quota Dashboard for fallbacks
+    model_fallbacks = [
+        st.session_state.model_name,  # The model already in use
+        "gemini-3-flash",             # The reliable fallback from the dashboard
+        "gemini-2.5-flash-lite",      # The lower-resource fallback from the dashboard
+        "gemini-2.5-flash"            # A second attempt at the standard model
+    ]
     response = None # Initialize response variable
 
-    # 2. Loop through the fallbacks and try to generate content
+    # Loop through the fallbacks and try to generate content
     for model_to_try in model_fallbacks:
         try:
             # Update the model name in session state for UI confirmation
@@ -86,24 +90,32 @@ if prompt := st.chat_input("Ask me anything..."):
             # If successful, break the loop and process the response
             break 
 
-        except Exception as e:
-            # Check for the Quota Exhausted error (Error 429)
+        except APIError as e:
+            # Check for the Quota Exhausted error (Error 429) OR Model Not Found (Error 404)
             if "429" in str(e) or "RESOURCE_EXHAUSTED" in str(e):
-                # If it's a quota error, show a warning and try the next model
                 st.warning(f"Quota exhausted for {model_to_try}. Trying next model...")
                 continue # Go to the next model in the list
+            elif "404" in str(e) or "NOT_FOUND" in str(e):
+                st.warning(f"Model {model_to_try} not found or unsupported. Trying next model...")
+                continue # Go to the next model in the list
             else:
-                # If it's any other error (e.g., API key invalid), stop everything
-                st.error(f"An unexpected error occurred: {e}")
+                # If it's any other error, stop everything
+                st.error(f"An unexpected API error occurred with {model_to_try}: {e}")
                 response = None 
                 break # Exit the loop immediately
+        
+        except Exception as e:
+            st.error(f"An unexpected error occurred: {e}")
+            response = None 
+            break
 
-    # 3. Process the result only if a valid response was generated
+
+    # Process the result only if a valid response was generated
     if response:
         with st.chat_message("assistant",avatar="🕊️"):
             st.markdown(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text})
     
-    # Optional: If all models failed
+    # If all models failed
     elif not response:
          st.error("❌ All available models failed due to persistent quota limits or unexpected errors.")
