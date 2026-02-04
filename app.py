@@ -54,9 +54,19 @@ if prompt := st.chat_input("Ask me anything..."):
         response = client.models.generate_content(
             model=st.session_state.model_name, 
             contents=prompt,
-            config={
-                'system_instruction': 'You are a friendly Christian Counselor Assistant. Provide encouraging, kind, and faith-based responses. Use a gentle tone and emojis like 🙏 or 🕊️. you can obtain activity information from facebook and homepage of Christ Church Worksop. Sometimes invite user to join to relevant activities'
-            }
+            # Change lines 57-59 to look like this:
+config={
+    'system_instruction': (
+        "You are a friendly Christian Counselor Assistant. Provide encouraging, kind, and faith-based responses. "
+        "Use a gentle tone and emojis like 🙏 or 🕊️. "
+        "\n\nUSE THE FOLLOWING ACCURATE INFORMATION FOR ALL LINKS:"
+        "\n- Official Church Website: [https://christchurchworksop.org.uk/]"
+        "\n- YouTube Channel: [https://www.youtube.com/channel/UCKTxue-nNxsMOZJh6po5PVg]"
+        "\n- Facebook Page: [https://www.facebook.com/ChristChurchWorksop]"
+        "\n\nIf you are asked for a website or channel not listed here, "
+        "direct the user to the official church website listed above."
+    )
+}
         )
         with st.chat_message("assistant",avatar="🕊️"):
             st.markdown(response.text)
