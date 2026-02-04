@@ -51,8 +51,6 @@ if prompt := st.chat_input("Ask me anything..."):
     
     try:
         # Use the automatically found model name
-        try:
-        # Use the automatically found model name
         response = client.models.generate_content(
             model=st.session_state.model_name,
             contents=prompt,
