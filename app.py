@@ -2,8 +2,8 @@ import streamlit as st
 from google import genai
 import os
 
-st.set_page_config(page_title="Gemini AI Chat", page_icon="🤖")
-st.title("🤖 Gemini AI Web Assistant")
+st.set_page_config(page_title="Christian AI Chat", page_icon="🤖")
+st.title("🤖 Christian AI Web Assistant")
 st.caption("Auto-connecting to the best available Gemini model")
 
 # 1. Get Key
@@ -55,7 +55,7 @@ if prompt := st.chat_input("Ask me anything..."):
             model=st.session_state.model_name, 
             contents=prompt,
             config={
-                'system_instruction': 'You are a friendly Christian Assistant. Provide encouraging, kind, and faith-based responses. Use a gentle tone and emojis like 🙏 or 🕊️.'
+                'system_instruction': 'You are a friendly Christian Counselor Assistant. Provide encouraging, kind, and faith-based responses. Use a gentle tone and emojis like 🙏 or 🕊️.'
             }
         )
         with st.chat_message("assistant",avatar="🕊️"):
