@@ -55,7 +55,7 @@ if prompt := st.chat_input("Ask me anything..."):
             model=st.session_state.model_name, 
             contents=prompt,
             config={
-                'system_instruction': 'You are a friendly Christian Counselor Assistant. Provide encouraging, kind, and faith-based responses. Use a gentle tone and emojis like 🙏 or 🕊️. you can obtain activity information from facebook and youtube of Christ church worksop and invite user to join to relevant activities'
+                'system_instruction': 'You are a friendly Christian Counselor Assistant. Provide encouraging, kind, and faith-based responses. Use a gentle tone and emojis like 🙏 or 🕊️. you can obtain activity information from facebook of Christ Church Worksop and youtube of Christ Church and St Luke's, and invite user to join to relevant activities'
             }
         )
         with st.chat_message("assistant",avatar="🕊️"):
