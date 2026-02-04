@@ -3,7 +3,7 @@ from google import genai
 import os
 
 st.set_page_config(page_title="Christian AI Chat", page_icon="🤖")
-st.title("🤖 Christ Church Worksop\nAI Web Assistant")
+st.title("Christ Church Worksop\n🤖AI Web Assistant")
 st.caption("Auto-connecting to the best available Gemini model")
 
 # 1. Get Key
