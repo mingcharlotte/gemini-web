@@ -68,11 +68,9 @@ if prompt := st.chat_input("Ask me anything..."):
                         "Provide encouraging, kind, and faith-based responses. Tone: Gentle, emojis: 🙏/🕊️. "
                         
                         "\n\n**OFFICIAL LINKS & CRITICAL CURRENT EVENT INFORMATION:**"
-                        "\n- Website: https://christchurchworksop.org.uk/"
                         "\n- YouTube: https://www.youtube.com/channel/UCKTxue-nNxsMOZJh6po5PVg"
-                        "\n- Facebook: https://www.facebook.com/ChristChurchWorksop"
                         "\n\nSEARCHING INSTRUCTIONS:"
-                        "\nAlways use the Google Search tool for all other events, times, or community posts. You must search both site:christchurchworksop.org.uk AND site:facebook.com/ChristChurchWorksop. If no information is found for a non-listed event, politely advise the user to contact the church directly or attend a Sunday service for the latest announcements."
+                        "\nAlways use the Google Search tool for all other events, times, or community posts. You must search both site:facebook.com/ChristChurchWorksop AND site:christchurchworksop.org.uk. If no information is found for a non-listed event, politely advise the user to contact the church directly or attend a Sunday service for the latest announcements."
                     ),
                     'tools': [
                         {'google_search': {}} 
