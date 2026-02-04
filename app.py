@@ -40,7 +40,9 @@ if "messages" not in st.session_state:
     st.session_state.messages = []
 
 for message in st.session_state.messages:
-    with st.chat_message(message["role"]):
+    # Assign icon based on who is speaking
+    icon = "👤" if message["role"] == "user" else "🕊️" 
+    with st.chat_message(message["role"], avatar=icon):
         st.markdown(message["content"])
 
 if prompt := st.chat_input("Ask me anything..."):
@@ -53,10 +55,10 @@ if prompt := st.chat_input("Ask me anything..."):
             model=st.session_state.model_name, 
             contents=prompt,
             config={
-                'system_instruction': 'You are a friendly Christian Vicar. Answer in short sentences and use emojis.'
+                'system_instruction': 'You are a friendly Christian Assistant. Provide encouraging, kind, and faith-based responses. Use a gentle tone and emojis like 🙏 or 🕊️.'
             }
         )
-        with st.chat_message("assistant"):
+        with st.chat_message("assistant",avatar="🕊️"):
             st.markdown(response.text)
         st.session_state.messages.append({"role": "assistant", "content": response.text})
     except Exception as e:
